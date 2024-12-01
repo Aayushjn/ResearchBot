@@ -3,6 +3,7 @@ import logging
 import ssl
 from datetime import date
 from pathlib import Path
+import requests
 
 import httpx
 from langchain_core.messages import HumanMessage
@@ -17,6 +18,11 @@ from dtypes import ClusterWithPapers
 from dtypes import Paper
 from encoder import DataclassJSONEncoder
 from semantic_scholar import search_semantic_scholar
+
+import ssl
+import httpx
+from pathlib import Path
+from tqdm import tqdm
 
 
 def cluster_papers(llm: ChatGoogleGenerativeAI, papers: list[Paper]) -> list[Cluster]:
@@ -53,7 +59,12 @@ def cluster_papers(llm: ChatGoogleGenerativeAI, papers: list[Paper]) -> list[Clu
 
 async def download_papers(topic: str, papers: dict[str, Paper]):
     papers_dir = Path.cwd().joinpath("research").joinpath(topic).joinpath("papers")
-    async with httpx.AsyncClient(http2=True, follow_redirects=True) as client:
+    # Create a custom SSL context if needed
+    ssl_context = ssl.create_default_context()
+    ssl_context.check_hostname = False
+    ssl_context.verify_mode = ssl.CERT_NONE
+
+    async with httpx.AsyncClient(http2=True, follow_redirects=True, verify=False) as client:
         for paper in tqdm(
             papers.values(),
             desc=f"Downloading {topic} papers...",
@@ -67,14 +78,12 @@ async def download_papers(topic: str, papers: dict[str, Paper]):
 
             try:
                 r = await client.get(paper.pdf_url)
-            except ssl.SSLCertVerificationError as e:
-                print(f"Failed to download {paper.pdf_url} to {dest}: {e}")
-                continue
-            if r.status_code != 200:
-                print(f"Failed to download {paper.pdf_url} to {dest}: {r.status_code} {r.content}")
-                continue
-
-            dest.write_bytes(r.content)
+                if r.status_code == 200:
+                    dest.write_bytes(r.content)
+                else:
+                    print(f"Failed to download {paper.pdf_url} to {dest}: {r.status_code} {r.content}")
+            except (httpx.ConnectError, ssl.SSLError) as e:
+                print(f"SSL error downloading {paper.pdf_url} to {dest}: {e}")
 
 
 def get_paper_notes(llm: ChatGoogleGenerativeAI, topic: str, paper_ids: list[str]):
@@ -103,7 +112,7 @@ def get_paper_notes(llm: ChatGoogleGenerativeAI, topic: str, paper_ids: list[str
         unit="pdf",
         dynamic_ncols=True,
     ):
-        notes_dir.joinpath(f"{paper_ids[i]}.md").write_text(response.content)
+        notes_dir.joinpath(f"{paper_ids[i]}.md").write_text(response.content,encoding="utf-8")
 
 
 def get_cluster_notes(llm: ChatGoogleGenerativeAI, topic: str, clusters: list[ClusterWithPapers]):
@@ -117,15 +126,15 @@ def get_cluster_notes(llm: ChatGoogleGenerativeAI, topic: str, clusters: list[Cl
 async def perform_research(llm: ChatGoogleGenerativeAI, topic: str):
     logger = logging.getLogger("researcher")
     logger.info("Performing research on %s...", topic)
-    response = llm.invoke(
-        [
-            SystemMessage(content=prompts.RESEARCHER_SYSTEM_INSTRUCTION.format(topic=topic)),
-            HumanMessage(content=prompts.SEMANTIC_SCHOLAR_PROMPT),
-        ]
-    )
+    # response = llm.invoke(
+    #     [
+    #         SystemMessage(content=prompts.RESEARCHER_SYSTEM_INSTRUCTION.format(topic=topic)),
+    #         HumanMessage(content=prompts.SEMANTIC_SCHOLAR_PROMPT),
+    #     ]
+    # )
     year = date.today().year
     logger.info("Searching Semantic Scholar...")
-    papers = search_semantic_scholar(query=response.content, year=(year - 10, year))
+    papers = search_semantic_scholar(query=topic, year=(year - 10, year))
     await download_papers(topic, papers)
     get_paper_notes(llm, topic, list(papers.keys()))
     logger.info("Extracted paper notes")
@@ -133,3 +142,5 @@ async def perform_research(llm: ChatGoogleGenerativeAI, topic: str):
     get_cluster_notes(llm, topic, clusters)
     logger.info("Extracted cluster notes")
     logger.info("Research Complete!")
+
+
