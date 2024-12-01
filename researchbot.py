@@ -26,7 +26,7 @@ async def main():
 
     writer = llm.create_llm()
     logger.info("Writer Initialized!")
-    await write_paper(writer, topic=topic)
+    await write_paper(writer, topic=topic,research_dir=research_dir)
 
 
 load_dotenv(find_dotenv())
