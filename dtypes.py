@@ -34,3 +34,10 @@ class ClusterWithPapers:
             details=cluster.details,
             papers=[paper_dict[paper_id] for paper_id in cluster.papers if paper_id in paper_dict],
         )
+
+
+@dataclass
+class SectionDescription:
+    section_number: str
+    title: str
+    description: str

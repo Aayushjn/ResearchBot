@@ -1,3 +1,5 @@
+from hashlib import shake_256
+
 from dtypes import Paper
 
 PAPER_DATA = {
@@ -98,7 +100,7 @@ PAPER_DATA = {
             "title": "CodeAid: Evaluating a Classroom Deployment of an LLM-based Programming Assistant that Balances Student and Educator Needs",
             "abstract": "Timely, personalized feedback is essential for students learning programming. LLM-powered tools like ChatGPT offer instant support, but reveal direct answers with code, which may hinder deep conceptual engagement. We developed CodeAid, an LLM-powered programming assistant delivering helpful, technically correct responses, without revealing code solutions. CodeAid answers conceptual questions, generates pseudo-code with line-by-line explanations, and annotates student’s incorrect code with fix suggestions. We deployed CodeAid in a programming class of 700 students for a 12-week semester. A thematic analysis of 8,000 usages of CodeAid was performed, further enriched by weekly surveys, and 22 student interviews. We then interviewed eight programming educators to gain further insights. Our findings reveal four design considerations for future educational AI assistants: D1) exploiting AI’s unique benefits; D2) simplifying query formulation while promoting cognitive engagement; D3) avoiding direct responses while encouraging motivated learning; and D4) maintaining transparency and control for students to asses and steer AI responses.",
             "pdf_url": "https://export.arxiv.org/pdf/2401.11314v2.pdf",
-            "summary": "CodeAid, an LLM-powered programming assistant delivering helpful, technically correct responses, without revealing code solutions, is developed, revealing four design considerations for future educational AI assistants."
+            "summary": "CodeAid, an LLM-powered programming assistant delivering helpful, technically correct responses, without revealing code solutions, is developed, revealing four design considerations for future educational AI assistants.",
         },
         "69dc9343d4e443cf7cfbd344a9a2cc9f8553e254": {
             "title": "Debugging with an AI Tutor: Investigating Novice Help-seeking Behaviors and Perceived Learning",
@@ -122,7 +124,7 @@ PAPER_DATA = {
             "title": "GPT-3: Its Nature, Scope, Limits, and Consequences",
             "abstract": "In this commentary, we discuss the nature of reversible and irreversible questions, that is, questions that may enable one to identify the nature of the source of their answers. We then introduce GPT-3, a third-generation, autoregressive language model that uses deep learning to produce human-like texts, and use the previous distinction to analyse it. We expand the analysis to present three tests based on mathematical, semantic (that is, the Turing Test), and ethical questions and show that GPT-3 is not designed to pass any of them. This is a reminder that GPT-3 does not do what it is not supposed to do, and that any interpretation of GPT-3 as the beginning of the emergence of a general form of artificial intelligence is merely uninformed science fiction. We conclude by outlining some of the significant consequences of the industrialisation of automatic and cheap production of good, semantic artefacts.",
             "pdf_url": "https://link.springer.com/content/pdf/10.1007/s11023-020-09548-1.pdf",
-            "summary": "The nature of reversible and irreversible questions is discussed, that is, questions that may enable one to identify the nature of the source of their answers, and GPT-3, a third-generation, autoregressive language model that uses deep learning to produce human-like texts, is introduced."
+            "summary": "The nature of reversible and irreversible questions is discussed, that is, questions that may enable one to identify the nature of the source of their answers, and GPT-3, a third-generation, autoregressive language model that uses deep learning to produce human-like texts, is introduced.",
         },
         "1234": {
             "title": "The role and challenges of education for responsible AI",
@@ -135,12 +137,6 @@ PAPER_DATA = {
             "abstract": "Recent advances in artificial intelligence have been driven by an exponential growth in digitised data. Natural language processing, in particular, has been transformed by machine learning models such as OpenAI’s GPT-3 which generates human-like text so realistic that its developers have warned of the dangers of its misuse. In recent months OpenAI released Codex, a new deep learning model trained on Python code from more than 50 million GitHub repositories. Provided with a natural language description of a programming problem as input, Codex generates solution code as output. It can also explain (in English) input code, translate code between programming languages, and more. In this work, we explore how Codex performs on typical introductory programming problems. We report its performance on real questions taken from introductory programming exams and compare it to results from students who took these same exams under normal conditions, demonstrating that Codex outscores most students. We then explore how Codex handles subtle variations in problem wording using several published variants of the well-known “Rainfall Problem” along with one unpublished variant we have used in our teaching. We find the model passes many test cases for all variants. We also explore how much variation there is in the Codex generated solutions, observing that an identical input prompt frequently leads to very different solutions in terms of algorithmic approach and code length. Finally, we discuss the implications that such technology will have for computing education as it continues to evolve, including both challenges and opportunities.",
             "pdf_url": "https://dl.acm.org/doi/pdf/10.1145/3511861.3511863",
             "summary": "This work explores how Codex performs on typical introductory programming problems, and reports its performance on real questions taken from introductory programming exams and compares it to results from students who took these same exams under normal conditions, demonstrating that Codex outscores most students.",
-        },
-        "73746f32d61405c5e3c95a7165b03a9f92298f53": {
-            "title": "Investigating the Potential of GPT-3 in Providing Feedback for Programming Assessments",
-            "abstract": "Recent advances in artificial intelligence have led to the development of large language models (LLMs), which are able to generate text, images, and source code based on prompts provided by humans. In this paper, we explore the capabilities of an LLM - OpenAI's GPT-3 model to provide feedback for student written code. Specifically, we examine the feasibility of GPT-3 to check, critique and suggest changes to code written by learners in an online programming exam of an undergraduate Python programming course. We collected 1211 student code submissions from 7 questions asked in a programming exam, and provided the GPT-3 model with separate prompts to check, critique and provide suggestions on these submissions. We found that there was a high variability in the accuracy of the model's feedback for student submissions. Across questions, the range for accurately checking the correctness of the code was between 57% to 79%, between 41% to 77% for accurately critiquing code, and between 32% and 93% for suggesting appropriate changes to the code. We also found instances where the model generated incorrect and inconsistent feedback. These findings suggest that models like GPT-3 currently cannot be 'directly' used to provide feedback to students for programming assessments.",
-            "pdf_url": "https://dl.acm.org/doi/pdf/10.1145/3587102.3588852",
-            "summary": "There was a high variability in the accuracy of the model's feedback for student written code, suggesting that models like GPT-3 currently cannot be 'directly' used to provide feedback to students for programming assessments.",            
         },
         "78c0b63d1442fe79bb3a9ce56fa5c293aacf8ea2": {
             "title": "AI Education from the Educator’s Perspective: Best Practices for an Inclusive AI Curriculum for Middle School",
@@ -232,20 +228,21 @@ PAPER_DATA = {
             "pdf_url": "https://export.arxiv.org/pdf/2405.14178v1.pdf",
             "summary": "Students value digital TAs for their ability to provide instant, engaging support, particularly during peak times such as before assessment deadlines, and expressed a strong preference for features that enable them to retain autonomy in their learning journey, such as scaffolding.",
         },
-    }
+    },
 }
 
 
 def search_semantic_scholar(query: str, year: tuple[int, int]) -> dict[str, Paper]:
     if query.lower() not in PAPER_DATA:
         raise ValueError(f"No data for query: {query}")
-    
+
     return {
-        paper_id: Paper(
-            paper_id=paper_id,
+        hashed_id: Paper(
+            paper_id=hashed_id,
             title=paper["title"],
             abstract=paper["abstract"],
             pdf_url=paper["pdf_url"],
         )
         for paper_id, paper in PAPER_DATA[query.lower()].items()
+        if (hashed_id := shake_256(paper_id.encode()).hexdigest(18))
     }

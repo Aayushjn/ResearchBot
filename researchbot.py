@@ -1,32 +1,35 @@
 import asyncio
-import logging
 from logging.config import dictConfig
 from pathlib import Path
 
 from dotenv import find_dotenv
 from dotenv import load_dotenv
 
-import llm
-from researcher import perform_research
-from writer import write_paper
+from researcher import Researcher
+from reviewer import Reviewer
+from writer import Writer
 
 
 async def main():
-    logger = logging.getLogger("researchbot")
-
-    topic = input("Topic: ")
+    topic = input("Topic: ").title()
 
     research_dir = Path.cwd().joinpath("research").joinpath(topic)
     research_dir.joinpath("papers").mkdir(parents=True, exist_ok=True)
     research_dir.joinpath("notes").mkdir(parents=True, exist_ok=True)
+    research_dir.joinpath("output").mkdir(parents=True, exist_ok=True)
 
-    researcher = llm.create_llm()
-    logger.info("Researcher Initialized!")
-    await perform_research(researcher, topic=topic)
+    researcher = Researcher(topic=topic, research_dir=research_dir)
+    await researcher.perform_research()
 
-    writer = llm.create_llm()
-    logger.info("Writer Initialized!")
-    await write_paper(writer, topic=topic,research_dir=research_dir)
+    uploaded_files = list(researcher.uploaded_papers.values())
+
+    writer = Writer(topic=topic, research_dir=research_dir, uploaded_files=uploaded_files)
+    writer.write_draft()
+
+    reviewer = Reviewer(topic=topic, research_dir=research_dir)
+    reviewer.review_paper()
+    writer.write_updated_paper()
+    reviewer.review_paper()
 
 
 load_dotenv(find_dotenv())
