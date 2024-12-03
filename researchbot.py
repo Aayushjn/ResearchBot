@@ -24,7 +24,9 @@ async def main():
     uploaded_files = list(researcher.uploaded_papers.values())
 
     writer = Writer(topic=topic, research_dir=research_dir, uploaded_files=uploaded_files)
-    writer.write_draft()
+    # await writer.write_draft()
+    writer.latest_draft = research_dir.joinpath("output").joinpath("survey_paper_0.md")
+    writer.write_count = 1
 
     reviewer = Reviewer(topic=topic, research_dir=research_dir)
     reviewer.review_paper()

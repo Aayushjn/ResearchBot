@@ -1,3 +1,5 @@
+# flake8: noqa: E501
+
 RESEARCHER_SYSTEM_INSTRUCTION = """
 You are a Computer Science PhD student conducting research on the following topic in Computer Science: {topic}. Your goal is to perform a comprehensive review of the selected topic and compare relevant approaches, techniques, or systems. Follow the steps below to structure your research:
 
@@ -85,13 +87,13 @@ INSTRUCTIONS:
 1. Section Extraction: First, identify and extract logical sections from the given text. A section is a coherent block of information that discusses a particular aspect or topic. Common sections might be "Introduction," "Methodology," "Results," "Discussion," etc., but the actual section titles may vary.
     - Identify natural breaks in the text, such as shifts in topics, subheadings, or changes in focus.
     - Provide a numbered list of the identified sections, giving each one a title that best describes its content.
-    
+
 2. Section Summaries and Insights: For each section you identify:
     - Provide detailed notes of the section's main points.
     - Highlight any important insights or key takeaways from that section.
     - If applicable, note any comparative analysis, methodologies, or contributions discussed in the section.
     - Provide your response as paragraphs instead of bullet points
-    
+
 OUTPUT FORMAT:
 1. Section Titles and Summaries:
     - List each section with a meaningful title and provide detailed notes for each section.
@@ -103,7 +105,7 @@ EXAMPLE OUTPUT:
 1. Section 1: Introduction
    - Summary: This section introduces the main topic of the research, discussing the key motivation and background.
    - Insights: The section outlines the research problem and provides a brief overview of previous work in the field.
-   
+
 2. Section 2: Methodology
    - Summary: This section explains the methodology used to conduct the research, including the experimental setup and tools used.
    - Insights: The chosen methodology allows for scalable experimentation, with a focus on reproducibility. Several novel techniques are introduced.
@@ -145,7 +147,7 @@ Output Format:
 Example Output:
 1. Cluster 1: Machine Learning Techniques for Image Recognition
    - Features: This cluster focuses on deep learning models, particularly convolutional neural networks (CNNs), for image classification and recognition tasks. The papers also emphasize data augmentation techniques to improve model accuracy.
-   
+
 2. Cluster 2: Optimization Algorithms in Machine Learning
    - Features: The papers in this cluster focus on optimization techniques such as gradient descent and evolutionary algorithms. There is also a focus on improving the efficiency of these algorithms in large-scale datasets.
 
@@ -228,7 +230,7 @@ The below input consists defines the section title and what type of content is e
 """
 
 WRITER_TITLE_PROMPT = """
-Identify an appropriate title based on the content that you have just written. The title must be concise and accurate to the topic being reviewed. 
+Identify an appropriate title based on the content that you have just written. The title must be concise and accurate to the topic being reviewed.
 Avoid using the word 'paper' in the title. Also note that you are writing a review paper and not a research paper. So, your title must not indicate any novelty in your content.
 Return nothing but the title text without any formatting
 """

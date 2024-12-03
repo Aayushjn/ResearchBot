@@ -236,7 +236,7 @@ def generate_report(hallucination_check: str, plagiarism_check: str) -> str:
     report = f"""
     Evaluation Report:
     -------------------
-    
+
     1. Hallucination Check:
        {hallucination_check}
 

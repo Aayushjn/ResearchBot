@@ -2,6 +2,8 @@ from hashlib import shake_256
 
 from dtypes import Paper
 
+# flake8: noqa: E501
+
 PAPER_DATA = {
     "image classification": {
         "f55c3d53eaacc75f497a55ab349276b18ea98cc1": {

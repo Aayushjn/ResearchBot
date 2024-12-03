@@ -9,7 +9,7 @@ from tqdm import tqdm
 import prompts
 from dtypes import SectionDescription
 from encoder import DataclassJSONEncoder
-from llm import create_llm_from_cache
+from llm import create_llm
 
 
 class Writer:
@@ -30,24 +30,21 @@ class Writer:
         self.write_count = 0
         self.logger = logging.getLogger("writer")
 
+        self.uploaded_files = uploaded_files
         notes = "\n\n".join((file.read_text() for file in self.research_dir.joinpath("notes").glob("*.md")))
-        self.llm = create_llm_from_cache(
-            cache_name="writer",
-            system_instruction=prompts.WRITER_SYSTEM_INSTRUCTION.format(topic=topic, notes=notes),
-            cache_content=uploaded_files,
-        )
+        self.llm = create_llm(system_instruction=prompts.WRITER_SYSTEM_INSTRUCTION.format(topic=topic, notes=notes))
         self.session = self.llm.start_chat()
 
     def define_outline(self) -> list[SectionDescription]:
         outline_response = self.session.send_message(
-            prompts.WRITER_OUTLINE_PROMPT,
+            [*self.uploaded_files, prompts.WRITER_OUTLINE_PROMPT],
             generation_config=genai.GenerationConfig(
                 response_mime_type="application/json", response_schema=list[SectionDescription]
             ),
         )
         return [SectionDescription(**s) for s in json.loads(outline_response.text)]
 
-    def write_draft(self):
+    async def write_draft(self):
         self.logger.info("Starting survey paper generation...")
 
         self.logger.info("Generating outline for the survey paper...")
@@ -61,7 +58,7 @@ class Writer:
             for section in tqdm(
                 outline, desc="Generating content for sections", total=len(outline), unit="section", dynamic_ncols=True
             ):
-                section_response = self.session.send_message(
+                section_response = await self.session.send_message_async(
                     prompts.WRITER_SECTION_CONTENT_PROMPT.format(
                         section_information=json.dumps(section, cls=DataclassJSONEncoder)
                     ),
